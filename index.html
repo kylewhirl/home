@@ -187,7 +187,7 @@
         <label for="server-icon">Server Icon</label>
         <input type="text" id="server-icon" placeholder="Enter server icon URL">
         
-        <button>Save Settings</button>
+        <button id="save-settings-btn">Save Settings</button>
     </div>
 
     <script>
@@ -212,6 +212,50 @@
             iframe.src = url;
             menu.classList.remove('active');
         }
+
+        // Set cookie
+        function setCookie(name, value, days) {
+            const d = new Date();
+            d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+            const expires = "expires=" + d.toUTCString();
+            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+        }
+
+        // Get cookie
+        function getCookie(name) {
+            const nameEQ = name + "=";
+            const ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+            }
+            return null;
+        }
+
+        // Load settings from cookies
+        window.onload = function () {
+            const serverName = getCookie("serverName");
+            const serverUrl = getCookie("serverUrl");
+            const serverIcon = getCookie("serverIcon");
+
+            if (serverName) document.getElementById('server-name').value = serverName;
+            if (serverUrl) document.getElementById('server-url').value = serverUrl;
+            if (serverIcon) document.getElementById('server-icon').value = serverIcon;
+        }
+
+        // Save settings to cookies
+        document.getElementById('save-settings-btn').addEventListener('click', () => {
+            const serverName = document.getElementById('server-name').value;
+            const serverUrl = document.getElementById('server-url').value;
+            const serverIcon = document.getElementById('server-icon').value;
+
+            setCookie("serverName", serverName, 365);
+            setCookie("serverUrl", serverUrl, 365);
+            setCookie("serverIcon", serverIcon, 365);
+
+            alert("Settings saved!");
+        });
     </script>
   </body>
 </html>
