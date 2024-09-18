@@ -6,7 +6,28 @@
     <title>Server Manager</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <style>
-        /* General Styles */
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+            --header-bg: rgba(255, 255, 255, 0.7);
+            --menu-bg: #fff;
+            --hover-bg: #f0f0f0;
+            --border-color: #ddd;
+            --button-bg: #007aff;
+            --button-hover: #005bb5;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #1a1a1a;
+            --text-color: #f0f0f0;
+            --header-bg: rgba(30, 30, 30, 0.7);
+            --menu-bg: #2a2a2a;
+            --hover-bg: #3a3a3a;
+            --border-color: #444;
+            --button-bg: #0a84ff;
+            --button-hover: #0064d6;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
             margin: 0;
@@ -14,7 +35,9 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
-            background-color: #f9f9f9;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
         }
 
         .header {
@@ -22,7 +45,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.7);
+            background: var(--header-bg);
             backdrop-filter: blur(10px);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             z-index: 2;
@@ -35,33 +58,42 @@
         }
 
         .icon-btn .material-icons {
-            font-size: 30px;
-            color: #333;
+            font-size: 24px;
+            color: var(--text-color);
         }
 
-        /* Menu styles */
-        .menu {
+        .menu, .settings-modal {
             position: fixed;
             top: 50px;
-            left: -300px;
-            height: 100%;
-            width: 250px;
-            background-color: #fff;
-            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+            height: calc(100% - 50px);
+            width: 300px;
+            background-color: var(--menu-bg);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             transition: 0.3s;
-            padding: 10px;
+            padding: 20px;
             z-index: 1;
+            overflow-y: auto;
+        }
+
+        .menu {
+            left: -340px;
+        }
+
+        .settings-modal {
+            right: -340px;
         }
 
         .menu.active {
             left: 0;
         }
 
-        .menu h2 {
-            margin: 0;
-            padding: 15px 0;
-            border-bottom: 1px solid #ddd;
-            color: #333;
+        .settings-modal.active {
+            right: 0;
+        }
+
+        .menu h2, .settings-modal h2 {
+            margin: 0 0 20px;
+            font-size: 24px;
         }
 
         .menu ul {
@@ -69,90 +101,91 @@
             padding: 0;
         }
 
-        .menu li {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            cursor: pointer;
-        }
-
-        .menu li:hover {
-            background-color: #f0f0f0;
-        }
-
-        /* Main webview */
-.webview {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    color: #555;
-    text-align: center;
-    height: calc(100vh - 50px); /* Adjust to fit the remaining height */
-    overflow: hidden;
-}
-
-.webview iframe {
-    width: 100vw;
-    height: 100%; /* Ensure it takes up full height */
-    border: none;
-}
-
-        /* Settings Modal */
-        .settings-modal {
-            position: fixed;
-            top: 50px;
-            right: -350px;
-            width: 300px;
-            height: 100%;
-            background-color: #fff;
-            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
-            transition: 0.3s;
+        .menu li, .settings-modal .server-item {
             padding: 15px;
-            z-index: 1;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .settings-modal.active {
-            right: 0;
+        .menu li:hover, .settings-modal .server-item:hover {
+            background-color: var(--hover-bg);
         }
 
-        .settings-modal h2 {
-            margin: 0 0 20px;
+        .webview {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            height: calc(100vh - 50px);
+            overflow: hidden;
+        }
+
+        .webview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
         }
 
         .settings-modal label {
             display: block;
             margin-bottom: 5px;
             font-size: 14px;
-            color: #333;
         }
 
-        .settings-modal input {
+        .settings-modal input, .settings-modal select {
             width: 100%;
             padding: 8px;
-            margin-bottom: 10px;
-            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            border: 1px solid var(--border-color);
             border-radius: 4px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
         }
 
         .settings-modal button {
             padding: 10px 15px;
-            background-color: #007aff;
+            background-color: var(--button-bg);
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            width: 100%;
+            transition: background-color 0.3s;
         }
 
         .settings-modal button:hover {
-            background-color: #005bb5;
+            background-color: var(--button-hover);
+        }
+
+        #save-server-btn {
+            width: 100%;
+            margin-bottom: 20px;
+            font-size: 16px;
+        }
+
+        .server-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .server-actions button {
+            padding: 5px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .server-actions .material-icons {
+            font-size: 18px;
+            color: var(--text-color);
         }
     </style>
 </head>
 
 <body>
-    <!-- Header with Menu and Settings icons -->
     <div class="header">
         <button class="icon-btn" id="menu-btn">
             <span class="material-icons">menu</span>
@@ -162,34 +195,36 @@
         </button>
     </div>
 
-    <!-- Slide-in Menu -->
     <div class="menu" id="menu">
         <h2>Servers</h2>
-        <ul>
-            <li onclick="selectServer('https://google.com')">Server 1</li>
-            <li onclick="selectServer('https://server2.com')">Server 2</li>
-            <li onclick="selectServer('https://server3.com')">Server 3</li>
-        </ul>
+        <ul id="server-list"></ul>
     </div>
 
-    <!-- Webview area with iframe -->
     <div class="webview" id="webview">
         <iframe id="server-frame" src="" title="Server Content"></iframe>
     </div>
 
-    <!-- Slide-in Settings Modal -->
     <div class="settings-modal" id="settings">
-        <h2>Server Settings</h2>
+        <h2>Settings</h2>
+        <label for="theme-select">Theme</label>
+        <select id="theme-select">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="system">System</option>
+        </select>
+
+        <h3>Add/Edit Server</h3>
+        <input type="hidden" id="server-id">
         <label for="server-name">Server Name</label>
         <input type="text" id="server-name" placeholder="Enter server name">
         
         <label for="server-url">Server URL</label>
         <input type="url" id="server-url" placeholder="Enter server URL">
         
-        <label for="server-icon">Server Icon</label>
-        <input type="text" id="server-icon" placeholder="Enter server icon URL">
-        
-        <button id="save-settings-btn">Save Settings</button>
+        <button id="save-server-btn">Save Server</button>
+
+        <h3>Server List</h3>
+        <div id="server-settings-list"></div>
     </div>
 
     <script>
@@ -198,15 +233,23 @@
         const menu = document.getElementById('menu');
         const settings = document.getElementById('settings');
         const iframe = document.getElementById('server-frame');
+        const themeSelect = document.getElementById('theme-select');
+        const serverList = document.getElementById('server-list');
+        const serverSettingsList = document.getElementById('server-settings-list');
+        const saveServerBtn = document.getElementById('save-server-btn');
+
+        let servers = [];
 
         // Toggle menu visibility
         menuBtn.addEventListener('click', () => {
             menu.classList.toggle('active');
+            settings.classList.remove('active');
         });
 
         // Toggle settings modal visibility
         settingsBtn.addEventListener('click', () => {
             settings.classList.toggle('active');
+            menu.classList.remove('active');
         });
 
         // Function to select server and load URL in iframe
@@ -220,7 +263,7 @@
             const d = new Date();
             d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
             const expires = "expires=" + d.toUTCString();
-            document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            document.cookie = name + "=" + encodeURIComponent(JSON.stringify(value)) + ";" + expires + ";path=/";
         }
 
         // Get cookie
@@ -230,34 +273,117 @@
             for (let i = 0; i < ca.length; i++) {
                 let c = ca[i];
                 while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-                if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                if (c.indexOf(nameEQ) === 0) return JSON.parse(decodeURIComponent(c.substring(nameEQ.length, c.length)));
             }
             return null;
         }
 
         // Load settings from cookies
-        window.onload = function () {
-            const serverName = getCookie("serverName");
-            const serverUrl = getCookie("serverUrl");
-            const serverIcon = getCookie("serverIcon");
+        function loadSettings() {
+            const theme = getCookie("theme") || "system";
+            themeSelect.value = theme;
+            applyTheme(theme);
 
-            if (serverName) document.getElementById('server-name').value = serverName;
-            if (serverUrl) document.getElementById('server-url').value = serverUrl;
-            if (serverIcon) document.getElementById('server-icon').value = serverIcon;
+            servers = getCookie("servers") || [];
+            renderServerLists();
         }
 
         // Save settings to cookies
-        document.getElementById('save-settings-btn').addEventListener('click', () => {
-            const serverName = document.getElementById('server-name').value;
-            const serverUrl = document.getElementById('server-url').value;
-            const serverIcon = document.getElementById('server-icon').value;
+        function saveSettings() {
+            const theme = themeSelect.value;
+            setCookie("theme", theme, 365);
+            setCookie("servers", servers, 365);
+        }
 
-            setCookie("serverName", serverName, 365);
-            setCookie("serverUrl", serverUrl, 365);
-            setCookie("serverIcon", serverIcon, 365);
+        // Apply theme
+        function applyTheme(theme) {
+            if (theme === "system") {
+                theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+            }
+            document.documentElement.setAttribute('data-theme', theme);
+        }
 
-            alert("Settings saved!");
+        // Render server lists
+        function renderServerLists() {
+            serverList.innerHTML = '';
+            serverSettingsList.innerHTML = '';
+
+            servers.forEach((server, index) => {
+                // Main menu list
+                const li = document.createElement('li');
+                li.textContent = server.name;
+                li.onclick = () => selectServer(server.url);
+                serverList.appendChild(li);
+
+                // Settings list
+                const div = document.createElement('div');
+                div.className = 'server-item';
+                div.innerHTML = `
+                    <span>${server.name}</span>
+                    <div class="server-actions">
+                        <button onclick="editServer(${index})" title="Edit">
+                            <span class="material-icons">edit</span>
+                        </button>
+                        <button onclick="deleteServer(${index})" title="Delete">
+                            <span class="material-icons">delete</span>
+                        </button>
+                    </div>
+                `;
+                serverSettingsList.appendChild(div);
+            });
+        }
+
+        // Edit server
+        function editServer(index) {
+            const server = servers[index];
+            document.getElementById('server-id').value = index;
+            document.getElementById('server-name').value = server.name;
+            document.getElementById('server-url').value = server.url;
+        }
+
+        // Delete server
+        function deleteServer(index) {
+            servers.splice(index, 1);
+            saveSettings();
+            renderServerLists();
+        }
+
+        // Save server
+        saveServerBtn.addEventListener('click', () => {
+            const id = document.getElementById('server-id').value;
+            const name = document.getElementById('server-name').value;
+            const url = document.getElementById('server-url').value;
+
+            if (name && url) {
+                if (id !== '') {
+                    servers[parseInt(id)] = { name, url };
+                } else {
+                    servers.push({ name, url });
+                }
+                saveSettings();
+                renderServerLists();
+                document.getElementById('server-id').value = '';
+                document.getElementById('server-name').value = '';
+                document.getElementById('server-url').value = '';
+            }
+        });
+
+        // Theme change listener
+        themeSelect.addEventListener('change', () => {
+            const theme = themeSelect.value;
+            applyTheme(theme);
+            saveSettings();
+        });
+
+        // Initial load
+        loadSettings();
+
+        // Listen for system theme changes
+        window.matchMedia("(prefers-color-scheme: dark)").addListener(() => {
+            if (themeSelect.value === "system") {
+                applyTheme("system");
+            }
         });
     </script>
-  </body>
+</body>
 </html>
