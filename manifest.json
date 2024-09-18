@@ -2,7 +2,6 @@
     "name": "Server Manager",
     "short_name": "Servers",
     "description": "Manage and access your servers",
-    "start_url": "/home/index.html",
     "display": "standalone",
     "background_color": "#ffffff",
     "theme_color": "#007aff",
