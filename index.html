@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Manager</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        /* General Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f9f9f9;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 2;
+        }
+
+        .icon-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .icon-btn .material-icons {
+            font-size: 30px;
+            color: #333;
+        }
+
+        /* Menu styles */
+        .menu {
+            position: fixed;
+            top: 50px;
+            left: -300px;
+            height: 100%;
+            width: 250px;
+            background-color: #fff;
+            box-shadow: 4px 0 6px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            padding: 10px;
+            z-index: 1;
+        }
+
+        .menu.active {
+            left: 0;
+        }
+
+        .menu h2 {
+            margin: 0;
+            padding: 15px 0;
+            border-bottom: 1px solid #ddd;
+            color: #333;
+        }
+
+        .menu ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .menu li {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .menu li:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* Main webview */
+        .webview {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            color: #555;
+            text-align: center;
+        }
+
+        .webview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            position: fixed;
+            top: 50px;
+            right: -350px;
+            width: 300px;
+            height: 100%;
+            background-color: #fff;
+            box-shadow: -4px 0 6px rgba(0, 0, 0, 0.1);
+            transition: 0.3s;
+            padding: 15px;
+            z-index: 1;
+        }
+
+        .settings-modal.active {
+            right: 0;
+        }
+
+        .settings-modal h2 {
+            margin: 0 0 20px;
+        }
+
+        .settings-modal label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .settings-modal input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .settings-modal button {
+            padding: 10px 15px;
+            background-color: #007aff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .settings-modal button:hover {
+            background-color: #005bb5;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header with Menu and Settings icons -->
+    <div class="header">
+        <button class="icon-btn" id="menu-btn">
+            <span class="material-icons">menu</span>
+        </button>
+        <button class="icon-btn" id="settings-btn">
+            <span class="material-icons">settings</span>
+        </button>
+    </div>
+
+    <!-- Slide-in Menu -->
+    <div class="menu" id="menu">
+        <h2>Servers</h2>
+        <ul>
+            <li onclick="selectServer('https://google.com')">Server 1</li>
+            <li onclick="selectServer('https://server2.com')">Server 2</li>
+            <li onclick="selectServer('https://server3.com')">Server 3</li>
+        </ul>
+    </div>
+
+    <!-- Webview area with iframe -->
+    <div class="webview" id="webview">
+        <iframe id="server-frame" src="" title="Server Content"></iframe>
+    </div>
+
+    <!-- Slide-in Settings Modal -->
+    <div class="settings-modal" id="settings">
+        <h2>Server Settings</h2>
+        <label for="server-name">Server Name</label>
+        <input type="text" id="server-name" placeholder="Enter server name">
+        
+        <label for="server-url">Server URL</label>
+        <input type="url" id="server-url" placeholder="Enter server URL">
+        
+        <label for="server-icon">Server Icon</label>
+        <input type="text" id="server-icon" placeholder="Enter server icon URL">
+        
+        <button>Save Settings</button>
+    </div>
+
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+        const menu = document.getElementById('menu');
+        const settings = document.getElementById('settings');
+        const iframe = document.getElementById('server-frame');
+
+        // Toggle menu visibility
+        menuBtn.addEventListener('click', () => {
+            menu.classList.toggle('active');
+        });
+
+        // Toggle settings modal visibility
+        settingsBtn.addEventListener('click', () => {
+            settings.classList.toggle('active');
+        });
+
+        // Function to select server and load URL in iframe
+        function selectServer(url) {
+            iframe.src = url;
+            menu.classList.remove('active');
+        }
+    </script>
+  </body>
+</html>
